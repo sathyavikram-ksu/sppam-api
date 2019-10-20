@@ -2,6 +2,8 @@ package com.group1.sppam.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -20,8 +22,10 @@ public class Risk extends Audit {
 
     private RiskType type;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "project_id")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "project_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
     private Project project;
 
     public Long getId() {

@@ -1,6 +1,6 @@
 package com.group1.sppam.controllers;
 
-import com.group1.sppam.controllers.exception.ResourceNotFoundException;
+import com.group1.sppam.exception.ResourceNotFoundException;
 import com.group1.sppam.models.Project;
 import com.group1.sppam.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class ProjectController {
                     project.update(updatedProject);
                     return repository.save(project);
                 })
-                .orElseThrow(() -> new ResourceNotFoundException("Project with" + id + "not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", id));
     }
 
     @DeleteMapping("/{id}")

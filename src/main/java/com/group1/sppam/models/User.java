@@ -1,5 +1,8 @@
 package com.group1.sppam.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.group1.sppam.payload.UserRequest;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,6 +23,24 @@ public class User extends Audit {
 
     @Email(message = "Please provide valid email")
     private String email;
+
+    @JsonIgnore
+    private String password;
+
+    public User() {
+    }
+
+    public User(UserRequest userRequest) {
+        this.name = userRequest.getName();
+        this.email = userRequest.getEmail();
+        this.password = userRequest.getPassword();
+    }
+
+    public User(@NotEmpty(message = "Please provide valid name") @Size(min = 1, max = 255, message = "Please provide name with 1-255 characters") String name, @Email(message = "Please provide valid email") String email, @NotEmpty(message = "Please provide valid password") String password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
 
     public Long getId() {
         return id;
@@ -45,7 +66,15 @@ public class User extends Audit {
         this.email = email;
     }
 
-    public void update(User updatedUser) {
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void update(UserRequest updatedUser) {
         this.setName(updatedUser.getName());
         this.setEmail(updatedUser.getEmail());
     }

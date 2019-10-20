@@ -1,6 +1,6 @@
 package com.group1.sppam.controllers;
 
-import com.group1.sppam.controllers.exception.ResourceNotFoundException;
+import com.group1.sppam.exception.ResourceNotFoundException;
 import com.group1.sppam.models.Risk;
 import com.group1.sppam.repository.ProjectRepository;
 import com.group1.sppam.repository.RiskRepository;
@@ -31,7 +31,7 @@ public class RiskController {
                 .map(project -> {
                     return repository.findAllByProject(project);
                 })
-                .orElseThrow(() -> new ResourceNotFoundException("Project with" + id + "not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", id));
     }
 
     @PostMapping("")
@@ -47,7 +47,7 @@ public class RiskController {
                     risk.update(updatedRisk);
                     return repository.save(risk);
                 })
-                .orElseThrow(() -> new ResourceNotFoundException("Risk with" + id + "not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Risk", "id", id));
     }
 
     @DeleteMapping("/{id}")
