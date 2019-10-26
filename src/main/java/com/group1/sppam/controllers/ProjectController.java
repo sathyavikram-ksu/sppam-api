@@ -1,5 +1,6 @@
 package com.group1.sppam.controllers;
 
+import com.group1.sppam.exception.ResourceNotFoundException;
 import com.group1.sppam.models.Project;
 import com.group1.sppam.repository.ProjectRepository;
 import com.group1.sppam.security.CurrentUser;
@@ -25,27 +26,27 @@ public class ProjectController {
 
     @GetMapping("/byuser")
     Iterable<Project> byUser(@CurrentUser UserPrincipal currentUser) {
-        return repository.findDistinctByOwner_IdOrTeamMembers_Id(currentUser.getId(), currentUser.getId());
+        return repository.findDistinctByOwner_IdOrTeamMembers_IdOrderByCreatedAtAsc(currentUser.getId(), currentUser.getId());
     }
 
     @GetMapping("/{id}")
     Optional<Project> byId(@PathVariable Long id) {
         return repository.findById(id);
     }
-//
-//    @PutMapping("/{id}")
-//    Project replaceEmployee(@RequestBody Project updatedProject, @PathVariable Long id) {
-//        return repository.findById(id)
-//                .map(project -> {
-//                    project.update(updatedProject);
-//                    return repository.save(project);
-//                })
-//                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", id));
-//    }
-//
-//    @DeleteMapping("/{id}")
-//    void deleteEmployee(@PathVariable Long id) {
-//        //delete risks
-//        repository.deleteById(id);
-//    }
+
+    @PutMapping("/{id}")
+    Project update(@RequestBody Project updatedProject, @PathVariable Long id) {
+        return repository.findById(id)
+                .map(project -> {
+                    project.update(updatedProject);
+                    return repository.save(project);
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", id));
+    }
+
+    @DeleteMapping("/{id}")
+    void deleteEmployee(@PathVariable Long id) {
+        //delete risks
+        repository.deleteById(id);
+    }
 }

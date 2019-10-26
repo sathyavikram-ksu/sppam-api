@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Optional;
 
 public interface ProjectRepository extends CrudRepository<Project, Long> {
-    Iterable<Project> findDistinctByOwner_IdOrTeamMembers_Id(Long ownerId, Long userId);
+    Iterable<Project> findDistinctByOwner_IdOrTeamMembers_IdOrderByCreatedAtAsc(Long ownerId, Long userId);
 }

@@ -2,6 +2,7 @@ package com.group1.sppam.controllers;
 
 import com.group1.sppam.exception.ResourceNotFoundException;
 import com.group1.sppam.models.Risk;
+import com.group1.sppam.payload.RiskRequest;
 import com.group1.sppam.repository.ProjectRepository;
 import com.group1.sppam.repository.RiskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/risk")
@@ -20,38 +20,35 @@ public class RiskController {
     @Autowired
     private ProjectRepository projectRepository;
 
-    @GetMapping("/{id}")
-    Optional<Risk> byId(@PathVariable Long id) {
-        return repository.findById(id);
-    }
-
     @GetMapping("/project/{id}")
     Iterable<Risk> byProjectId(@PathVariable Long id) {
-        return this.projectRepository.findById(id)
-                .map(project -> {
-                    return repository.findAllByProject(project);
-                })
-                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", id));
+        return repository.findAllByProject_IdOrderByCreatedAtAsc(id);
     }
 
-    @PostMapping("")
+    @PostMapping("/project/{projectId}")
     @ResponseStatus(HttpStatus.CREATED)
-    Risk newRisk(@Valid @RequestBody Risk newRisk) {
-        return repository.save(newRisk);
+    Risk newRisk(@Valid @RequestBody RiskRequest newRiskRequest, @PathVariable Long projectId) {
+        return this.projectRepository.findById(projectId)
+                .map(project -> {
+                    Risk risk = new Risk(newRiskRequest);
+                    risk.setProject(project);
+                    return repository.save(risk);
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", projectId));
     }
 
-    @PutMapping("/{id}")
-    Risk updateRisk(@RequestBody Risk updatedRisk, @PathVariable Long id) {
-        return repository.findById(id)
+    @PutMapping("/{riskId}")
+    Risk updateRisk(@Valid @RequestBody RiskRequest updatedRisk, @PathVariable Long riskId) {
+        return repository.findById(riskId)
                 .map(risk -> {
                     risk.update(updatedRisk);
                     return repository.save(risk);
                 })
-                .orElseThrow(() -> new ResourceNotFoundException("Risk", "id", id));
+                .orElseThrow(() -> new ResourceNotFoundException("Risk", "id", riskId));
     }
 
-    @DeleteMapping("/{id}")
-    void deleteEmployee(@PathVariable Long id) {
-        repository.deleteById(id);
+    @DeleteMapping("/{riskId}")
+    void deleteEmployee(@PathVariable Long riskId) {
+        repository.deleteById(riskId);
     }
 }

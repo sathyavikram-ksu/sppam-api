@@ -1,7 +1,7 @@
 package com.group1.sppam.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.group1.sppam.payload.RiskRequest;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -22,11 +22,23 @@ public class Risk extends Audit {
 
     private RiskType type;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "project_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private Project project;
+
+    public Risk() {
+    }
+
+    public Risk(RiskRequest riskRequest) {
+        this.id = riskRequest.getId();
+        this.orderNumber = riskRequest.getOrderNumber();
+        this.description = riskRequest.getDescription();
+        this.status = riskRequest.getStatus();
+        this.type = riskRequest.getType();
+        this.project = riskRequest.getProject();
+    }
 
     public Long getId() {
         return id;
@@ -68,18 +80,15 @@ public class Risk extends Audit {
         this.type = type;
     }
 
-    @JsonIgnore
     public Project getProject() {
         return project;
     }
 
-    @JsonProperty
     public void setProject(Project project) {
         this.project = project;
     }
 
-    public void update(Risk updatedRisk) {
-        this.setOrderNumber(updatedRisk.getOrderNumber());
+    public void update(RiskRequest updatedRisk) {
         this.setDescription(updatedRisk.getDescription());
         this.setStatus(updatedRisk.getStatus());
         this.setType(updatedRisk.getType());
