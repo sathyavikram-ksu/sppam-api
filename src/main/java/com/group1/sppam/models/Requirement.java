@@ -1,12 +1,11 @@
 package com.group1.sppam.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.group1.sppam.payload.RequirementRequest;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 
 @Entity
 public class Requirement extends Audit {
@@ -14,22 +13,24 @@ public class Requirement extends Audit {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private Integer orderNumber;
-
-    @NotEmpty(message = "Please provide valid name")
-    @Size(min = 1, max = 255, message = "Please provide name with 1-255 characters")
-    private String name;
-
     @Column(columnDefinition = "TEXT")
     private String description;
 
     private RequirementType type;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "project_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private Project project;
+
+    public Requirement() {
+    }
+
+    public Requirement(RequirementRequest requirementRequest) {
+        this.setDescription(requirementRequest.getDescription());
+        this.setType(requirementRequest.getType());
+    }
 
     public Long getId() {
         return id;
@@ -37,14 +38,6 @@ public class Requirement extends Audit {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Integer getOrderNumber() {
-        return orderNumber;
-    }
-
-    public void setOrderNumber(Integer orderNumber) {
-        this.orderNumber = orderNumber;
     }
 
     public String getDescription() {
@@ -71,17 +64,7 @@ public class Requirement extends Audit {
         this.project = project;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void update(Requirement updatedRequirement) {
-        this.setOrderNumber(updatedRequirement.getOrderNumber());
-        this.setName(updatedRequirement.getName());
+    public void update(RequirementRequest updatedRequirement) {
         this.setDescription(updatedRequirement.getDescription());
         this.setType(updatedRequirement.getType());
     }
